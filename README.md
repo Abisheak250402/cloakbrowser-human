@@ -101,7 +101,7 @@ page._original.goto('https://...')
 
 | Without wrapper (bot) | With wrapper (human) |
 |---|---|
-| ![Bot movement](assets/demo-bot.gif) | ![Human movement](assets/demo-human.gif) |
+| ![Bot movement](assets/demo-robot.gif) | ![Human movement](assets/demo-human.gif) |
 
 *Straight-line teleportation vs. Bezier curves with wobble, natural scroll, realistic typing.*
 
