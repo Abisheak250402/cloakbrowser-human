@@ -296,21 +296,21 @@ Launch CloakBrowser with human-like behavior patching. All pages created from th
 
 Same as `launch()` but returns a `BrowserContext` with common options pre-set. Closing the context also closes the browser.
 
-### `humanMove(page, startX, startY, endX, endY, config)` (JS) / `human_move(page, start_x, start_y, end_x, end_y, config)` (Python)
+### `humanMove(raw, startX, startY, endX, endY, config)` (JS) / `human_move(raw, start_x, start_y, end_x, end_y, config)` (Python)
 
-Move the mouse along a human-like Bezier trajectory. Used internally by the wrapper but exported for advanced use cases.
+Move the mouse along a human-like Bezier trajectory. `raw` is a RawMouse object (original Playwright mouse methods). Used internally by the wrapper but exported for advanced use cases.
 
-### `humanType(page, text, config)` (JS) / `human_type(page, text, config)` (Python)
+### `humanType(page, raw, text, config)` (JS) / `human_type(page, raw, text, config)` (Python)
 
-Type text character-by-character with human timing. Used internally but exported for direct use.
+Type text character-by-character with human timing. `raw` is a RawKeyboard object. `page` is needed for `evaluate()` calls (synthetic events for shift-symbols). Used internally but exported for direct use.
 
-### `humanIdle(page, seconds, cx, cy, config)` (JS) / `human_idle(page, seconds, cx, cy, config)` (Python)
+### `humanIdle(raw, seconds, cx, cy, config)` (JS) / `human_idle(raw, seconds, cx, cy, config)` (Python)
 
-Simulate idle cursor drift for the specified duration. Useful between actions to appear more natural.
+Simulate idle cursor drift for the specified duration. `raw` is a RawMouse object. Useful between actions to appear more natural.
 
-### `scrollToElement(page, selector, cursorX, cursorY, config)` (JS) / `scroll_to_element(page, selector, cursor_x, cursor_y, config)` (Python)
+### `scrollToElement(page, raw, selector, cursorX, cursorY, config)` (JS) / `scroll_to_element(page, raw, selector, cursor_x, cursor_y, config)` (Python)
 
-Scroll to make an element visible using realistic mouse wheel events.
+Scroll to make an element visible using realistic mouse wheel events. `raw` is a RawMouse object. `page` is needed for viewport/element queries.
 
 ### `resolveConfig(preset, overrides)` (JS) / `resolve_config(preset, overrides)` (Python)
 
