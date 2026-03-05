@@ -242,7 +242,7 @@ Result with wrapper: **`isBot: false`**, all 23 flags `false`, including `suspic
 
 ### 1. patchright-python proxy bug
 
-`page.add_init_script()` breaks HTTP proxy with authentication in the Python version of patchright (`ERR_TUNNEL_CONNECTION_FAILED`). The workaround is to inject scripts via `page.evaluate()` after `page.goto()` instead. This does **not** affect the JS version. A bug report should be filed in the [patchright-python repository](https://github.com/AjaxMultiCommentary/patchright-python).
+`page.add_init_script()` breaks HTTP proxy with authentication in the Python version of patchright (`ERR_TUNNEL_CONNECTION_FAILED`). The workaround is to inject scripts via `page.evaluate()` after `page.goto()` instead. This does **not** affect the JS version. A bug report should be filed in the [patchright-python repository](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright-python).
 
 ### 2. Coalesced events = 1
 
