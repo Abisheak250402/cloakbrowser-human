@@ -223,13 +223,12 @@ function patchBrowser(browser: Browser, cfg: HumanConfig): void {
     return context;
   };
 
-  const origNewPage = browser.newPage.bind(browser);
-  (browser as any).newPage = async function (...args: any[]) {
-    const page = await origNewPage(...args);
-    const cursor: CursorState = { x: 0, y: 0, initialized: false };
-    patchPage(page, cfg, cursor);
+  (browser as any).newPage = async function (options?: any) {
+    const context = await (browser as any).newContext(options);
+    const page = await context.newPage();
     return page;
   };
+
 }
 
 // ---------------------------------------------------------------------------
