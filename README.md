@@ -264,6 +264,10 @@ CDP's `Input.dispatchMouseEvent` does not generate coalesced pointer events at t
 
 `keyboard.insertText()` inserts characters without firing `keydown`/`keyup` events. For normal characters, the wrapper uses `keyboard.down()`/`keyboard.up()` which generate proper events. `insertText` is only used for shift-symbols (`@`, `#`, `!`, etc.) where `keyboard.down()` may produce incorrect characters depending on keyboard layout — wrapped with synthetic `KeyboardEvent` dispatches for the event log.
 
+### 4. Locator API not yet intercepted
+
+The wrapper currently patches `page.click()`, `page.type()`, `page.mouse.*`, and `page.keyboard.*`. Playwright's Locator API (`page.locator('selector').click()`, `.fill()`, `.pressSequentially()`) is **not yet intercepted** and will use original Playwright behavior. Locator support is planned — use `page.click()` and `page.type()` for now.
+
 ## API Reference
 
 ### `launch(options)` (JS) / `launch(**kwargs)` (Python)
