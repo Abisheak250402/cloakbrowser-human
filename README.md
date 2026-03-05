@@ -6,6 +6,18 @@ Drop-in Playwright wrapper that defeats behavioral bot detection. Write normal P
 
 CloakBrowser solves **fingerprint detection** (WebDriver, CDP, headless flags, GPU inconsistencies). `cloakbrowser-human` solves **behavioral detection** — sites that analyze mouse movement patterns, typing cadence, click coordinates, scroll velocity, and other interaction signals to distinguish humans from bots.
 
+## Motivation
+
+This project was inspired by discussions in the CloakBrowser community about behavioral detection — the growing category of anti-bot systems that go beyond fingerprinting and analyze how users actually interact with a page. Tools like [ghost-cursor](https://github.com/createcontainer/ghost-cursor) address mouse movement in isolation, but no existing solution covers the full picture: mouse trajectories, click timing, typing cadence, scroll patterns, and Shift key handling — all tuned to work together as a drop-in Playwright wrapper.
+
+`cloakbrowser-human` is a **companion package** to [CloakBrowser](https://github.com/CloakHQ/cloakbrowser), not a replacement. CloakBrowser handles the hard part — making Chromium invisible to fingerprint-based detection (WebDriver flags, CDP leaks, headless signals, GPU inconsistencies, and more). This wrapper adds the behavioral layer on top: realistic interaction patterns that satisfy sites analyzing mouse movement entropy, typing speed distributions, and click coordinate variance.
+
+This is a **temporary high-level solution**. The long-term goal is to integrate behavioral humanization directly into the CloakBrowser binary — particularly for signals like [coalesced pointer events](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/getCoalescedEvents), which cannot be fully fixed from a JavaScript wrapper due to Chromium's internal event pipeline. Until that binary-level work is complete, `cloakbrowser-human` bridges the gap and passes current behavioral detection benchmarks.
+
+Special thanks to the contributors who reported behavioral detection failures and helped shape the requirements for this package.
+
+
+
 ## Installation
 
 ### JavaScript / Node.js
