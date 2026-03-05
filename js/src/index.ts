@@ -1,22 +1,15 @@
 /**
  * cloakbrowser-human — Entry point.
- *
- * Wraps CloakBrowser's launch() and intercepts Playwright Page methods
- * (click, type, mouse.move, mouse.click, keyboard.type, mouse.wheel)
- * replacing them with human-like implementations.
- *
- * Original methods remain accessible via page._original.
  */
 
 import type { Browser, BrowserContext, Page } from 'playwright-core';
 import { HumanConfig, HumanPreset, resolveConfig, rand, randRange, sleep } from './config.js';
-import { humanMove, humanClick, clickTarget, humanIdle } from './mouse.js';
+import { RawMouse, RawKeyboard, humanMove, humanClick, clickTarget, humanIdle } from './mouse.js';
 import { humanType } from './keyboard.js';
 import { scrollToElement } from './scroll.js';
 
-// Re-export for user convenience
 export { HumanConfig, HumanPreset, resolveConfig } from './config.js';
-export { humanMove, humanClick, humanIdle } from './mouse.js';
+export { humanMove, humanClick, humanIdle, RawMouse, RawKeyboard } from './mouse.js';
 export { humanType } from './keyboard.js';
 export { scrollToElement } from './scroll.js';
 
@@ -25,35 +18,17 @@ export { scrollToElement } from './scroll.js';
 // ---------------------------------------------------------------------------
 
 export interface HumanLaunchOptions {
-  /** Run in headless mode (default: false — human simulation is visual). */
   headless?: boolean;
-  /** Human behavior preset: 'default' or 'careful'. */
   humanPreset?: HumanPreset;
-  /** Override individual human config parameters. */
   humanConfig?: Partial<HumanConfig>;
-  /** Proxy URL string or Playwright proxy object. */
   proxy?: string | { server: string; bypass?: string; username?: string; password?: string };
-  /** Any additional options passed through to cloakbrowser's launch(). */
   [key: string]: unknown;
 }
 
 // ---------------------------------------------------------------------------
-// Coalesced events patch (experimental)
+// Coalesced events patch
 // ---------------------------------------------------------------------------
 
-/**
- * Inject the coalesced PointerEvent patch into a page.
- *
- * CDP Input.dispatchMouseEvent doesn't generate coalesced points, so sites
- * that check getCoalescedEvents() see length=1 (bot signal). This patch
- * fabricates 1-3 additional coalesced points with tiny offsets.
- *
- * **Experimental**: advanced anti-fraud may detect this via toString(),
- * cross-origin iframe comparison, or web workers.
- *
- * Must be called via page.evaluate() AFTER page.goto(), not via
- * addInitScript() — the latter breaks HTTP proxy auth in patchright-python.
- */
 const COALESCED_PATCH = `
 (() => {
   if (window.__coalescedPatched) return;
@@ -84,12 +59,12 @@ async function injectCoalescedPatch(page: Page): Promise<void> {
   try {
     await page.evaluate(COALESCED_PATCH);
   } catch {
-    // Page may have navigated or crashed — non-fatal
+    // non-fatal
   }
 }
 
 // ---------------------------------------------------------------------------
-// Cursor state tracking
+// Cursor state
 // ---------------------------------------------------------------------------
 
 interface CursorState {
@@ -102,9 +77,6 @@ interface CursorState {
 // Page patching
 // ---------------------------------------------------------------------------
 
-/**
- * Detect if an element is an input/textarea.
- */
 async function isInputElement(page: Page, selector: string): Promise<boolean> {
   try {
     return await page.evaluate((sel: string) => {
@@ -118,10 +90,6 @@ async function isInputElement(page: Page, selector: string): Promise<boolean> {
   }
 }
 
-/**
- * Patch a Page object, replacing click/type/mouse/keyboard methods with
- * human-like implementations. Originals are stored in page._original.
- */
 function patchPage(page: Page, cfg: HumanConfig, cursor: CursorState): void {
   // Store originals
   const originals = {
@@ -141,7 +109,23 @@ function patchPage(page: Page, cfg: HumanConfig, cursor: CursorState): void {
 
   (page as any)._original = originals;
 
-  // Initialize cursor position (simulate coming from address bar)
+  // Raw interfaces — pass these to humanMove/humanClick/etc
+  // so they call originals, not the patched methods
+  const rawMouse: RawMouse = {
+    move: originals.mouseMove,
+    down: originals.mouseDown,
+    up: originals.mouseUp,
+    wheel: originals.mouseWheel,
+  };
+
+  const rawKeyboard: RawKeyboard = {
+    down: originals.keyboardDown,
+    up: originals.keyboardUp,
+    type: originals.keyboardType,
+    insertText: originals.keyboardInsertText,
+  };
+
+  // Initialize cursor
   async function ensureCursorInit(): Promise<void> {
     if (!cursor.initialized) {
       cursor.x = rand(cfg.initial_cursor_x[0], cfg.initial_cursor_x[1]);
@@ -151,7 +135,7 @@ function patchPage(page: Page, cfg: HumanConfig, cursor: CursorState): void {
     }
   }
 
-  // --- page.goto() --- inject coalesced patch after navigation
+  // --- page.goto() ---
   (page as any).goto = async function (url: string, options?: any) {
     const response = await originals.goto(url, options);
     if (cfg.patch_coalesced) {
@@ -160,49 +144,38 @@ function patchPage(page: Page, cfg: HumanConfig, cursor: CursorState): void {
     return response;
   };
 
-  // --- page.click(selector) --- full human flow: scroll → move → aim → click
+  // --- page.click(selector) ---
   (page as any).click = async function (selector: string, options?: any) {
     await ensureCursorInit();
 
-    // Scroll to element if needed
     const { box, cursorX, cursorY } = await scrollToElement(
-      page, selector, cursor.x, cursor.y, cfg,
+      page, rawMouse, selector, cursor.x, cursor.y, cfg,
     );
     cursor.x = cursorX;
     cursor.y = cursorY;
 
-    // Determine click target point
     const isInput = await isInputElement(page, selector);
     const target = clickTarget(box, isInput, cfg);
 
-    // Move to target
-    await humanMove(page, cursor.x, cursor.y, target.x, target.y, cfg);
+    await humanMove(rawMouse, cursor.x, cursor.y, target.x, target.y, cfg);
     cursor.x = target.x;
     cursor.y = target.y;
 
-    // Click
-    await humanClick(page, isInput, cfg);
+    await humanClick(rawMouse, isInput, cfg);
   };
 
-  // --- page.type(selector, text) --- click field first, then type
+  // --- page.type(selector, text) ---
   (page as any).type = async function (selector: string, text: string, options?: any) {
-    // Field switch delay (simulates human looking at the next field)
     await sleep(randRange(cfg.field_switch_delay));
-
-    // Click into the field first
     await (page as any).click(selector);
-
-    // Brief pause after clicking before typing (human settles)
     await sleep(rand(100, 250));
-
-    // Type
-    await humanType(page, text, cfg);
+    await humanType(page, rawKeyboard, text, cfg);
   };
 
   // --- page.mouse.move(x, y) ---
   (page as any).mouse.move = async function (x: number, y: number, options?: any) {
     await ensureCursorInit();
-    await humanMove(page, cursor.x, cursor.y, x, y, cfg);
+    await humanMove(rawMouse, cursor.x, cursor.y, x, y, cfg);
     cursor.x = x;
     cursor.y = y;
   };
@@ -210,15 +183,15 @@ function patchPage(page: Page, cfg: HumanConfig, cursor: CursorState): void {
   // --- page.mouse.click(x, y) ---
   (page as any).mouse.click = async function (x: number, y: number, options?: any) {
     await ensureCursorInit();
-    await humanMove(page, cursor.x, cursor.y, x, y, cfg);
+    await humanMove(rawMouse, cursor.x, cursor.y, x, y, cfg);
     cursor.x = x;
     cursor.y = y;
-    await humanClick(page, false, cfg);
+    await humanClick(rawMouse, false, cfg);
   };
 
   // --- page.keyboard.type(text) ---
   (page as any).keyboard.type = async function (text: string, options?: any) {
-    await humanType(page, text, cfg);
+    await humanType(page, rawKeyboard, text, cfg);
   };
 }
 
@@ -226,33 +199,23 @@ function patchPage(page: Page, cfg: HumanConfig, cursor: CursorState): void {
 // Browser / Context patching
 // ---------------------------------------------------------------------------
 
-/**
- * Patch a BrowserContext so all new pages are automatically patched.
- */
 function patchContext(context: BrowserContext, cfg: HumanConfig): void {
   const cursor: CursorState = { x: 0, y: 0, initialized: false };
 
-  // Patch existing pages
   for (const page of context.pages()) {
     patchPage(page, cfg, cursor);
   }
 
-  // Patch future pages
   context.on('page', (page: Page) => {
     patchPage(page, cfg, cursor);
   });
 }
 
-/**
- * Patch a Browser so all new contexts and pages are automatically patched.
- */
 function patchBrowser(browser: Browser, cfg: HumanConfig): void {
-  // Patch existing contexts
   for (const context of browser.contexts()) {
     patchContext(context, cfg);
   }
 
-  // Intercept newContext to patch future contexts
   const origNewContext = browser.newContext.bind(browser);
   (browser as any).newContext = async function (...args: any[]) {
     const context = await origNewContext(...args);
@@ -260,7 +223,6 @@ function patchBrowser(browser: Browser, cfg: HumanConfig): void {
     return context;
   };
 
-  // Intercept newPage to patch standalone pages
   const origNewPage = browser.newPage.bind(browser);
   (browser as any).newPage = async function (...args: any[]) {
     const page = await origNewPage(...args);
@@ -274,25 +236,6 @@ function patchBrowser(browser: Browser, cfg: HumanConfig): void {
 // launch()
 // ---------------------------------------------------------------------------
 
-/**
- * Launch CloakBrowser with human-like behavior patching.
- *
- * Works identically to cloakbrowser's `launch()`, but all pages created
- * from the returned browser will have their click/type/mouse/keyboard
- * methods replaced with human-like implementations.
- *
- * @example
- * ```ts
- * import { launch } from 'cloakbrowser-human';
- *
- * const browser = await launch({ headless: false, humanPreset: 'default' });
- * const page = await browser.newPage();
- * await page.goto('https://example.com');
- * await page.click('input[type="email"]');
- * await page.type('input[type="email"]', 'test@mail.com');
- * await browser.close();
- * ```
- */
 export async function launch(options: HumanLaunchOptions = {}): Promise<Browser> {
   const {
     humanPreset = 'default',
@@ -303,7 +246,6 @@ export async function launch(options: HumanLaunchOptions = {}): Promise<Browser>
 
   const cfg = resolveConfig(humanPreset, humanOverrides);
 
-  // Dynamic import so cloakbrowser is a peer dependency, not bundled
   const cloakbrowser = await import('cloakbrowser');
   const browser = await cloakbrowser.launch({
     headless,
@@ -314,10 +256,6 @@ export async function launch(options: HumanLaunchOptions = {}): Promise<Browser>
   return browser;
 }
 
-/**
- * Launch CloakBrowser with human-like behavior and return a BrowserContext.
- * Convenience wrapper around cloakbrowser's launchContext().
- */
 export async function launchContext(options: HumanLaunchOptions = {}): Promise<BrowserContext> {
   const {
     humanPreset = 'default',
