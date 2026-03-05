@@ -16,7 +16,13 @@ This is a **temporary high-level solution**. The long-term goal is to integrate 
 
 Special thanks to the contributors who reported behavioral detection failures and helped shape the requirements for this package.
 
+## Demo
 
+| Without wrapper (bot) | With wrapper (human) |
+|---|---|
+| ![Bot movement](assets/demo-robot.gif) | ![Human movement](assets/demo-human.gif) |
+
+*Straight-line teleportation vs. Bezier curves with wobble, natural scroll, realistic typing.*
 
 ## Installation
 
@@ -109,13 +115,7 @@ page._original.click('selector')
 page._original.goto('https://...')
 ```
 
-## Demo
 
-| Without wrapper (bot) | With wrapper (human) |
-|---|---|
-| ![Bot movement](assets/demo-robot.gif) | ![Human movement](assets/demo-human.gif) |
-
-*Straight-line teleportation vs. Bezier curves with wobble, natural scroll, realistic typing.*
 
 ## Configuration
 
