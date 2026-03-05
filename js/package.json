@@ -1,0 +1,58 @@
+{
+  "name": "cloakbrowser-human",
+  "version": "0.1.0",
+  "description": "Human-like mouse, keyboard, and scroll for CloakBrowser. Drop-in Playwright wrapper that defeats behavioral bot detection.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "cloakbrowser",
+    "human",
+    "mouse",
+    "keyboard",
+    "scroll",
+    "stealth",
+    "playwright",
+    "anti-detect",
+    "bot-detection",
+    "behavioral",
+    "fingerprint",
+    "automation",
+    "humanize",
+    "bezier",
+    "cloudflare",
+    "datadome",
+    "turnstile"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evelaa123/cloakbrowser-human"
+  },
+  "homepage": "https://github.com/evelaa123/cloakbrowser-human#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "peerDependencies": {
+    "cloakbrowser": ">=0.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "playwright-core": "^1.40.0",
+    "typescript": "^5.3.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  }
+}

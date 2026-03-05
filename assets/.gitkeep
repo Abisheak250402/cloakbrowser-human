@@ -1,0 +1,8 @@
+# Demo Assets
+
+This directory is for GIF/video demos showing the difference between:
+
+- **demo-bot.gif** — Standard Playwright automation (straight-line mouse, instant typing, programmatic scroll)
+- **demo-human.gif** — cloakbrowser-human wrapper (Bezier curves, natural typing, wheel-based scroll)
+
+Record these by running the same script with and without the wrapper against a bot detection test page.
