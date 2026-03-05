@@ -6,7 +6,9 @@ import logging
 from typing import Any, Optional
 
 from .config import HumanConfig, HumanPreset, resolve_config, rand, rand_range, sleep_ms
-from .mouse import RawMouse, RawKeyboard, human_move, human_click, click_target, human_idle
+from .mouse import RawMouse, human_move, human_click, click_target, human_idle
+from .keyboard import RawKeyboard, human_type
+
 from .keyboard import human_type
 from .scroll import scroll_to_element
 
