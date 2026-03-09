@@ -1,3 +1,5 @@
+#  THIS PACKAGE IS CURRENTLY NOT SUPPORTED. ALL FUNCTIONS AND UPDATES WERE MERGED DIRECTLY IN [CloakBrowser](https://github.com/CloakHQ/cloakbrowser). IT HANDLES ALL LOCATOR API METHODS, SO GO ON AND TEST IT. 1 LINE ADDED. CDP FIXED FROM BINARY.
+
 # cloakbrowser-human
 
 **Human-like mouse, keyboard, and scroll for [CloakBrowser](https://github.com/CloakHQ/cloakbrowser).**
